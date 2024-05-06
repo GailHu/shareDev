@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+<h1>hello</h1>
+<script>
+    const socket = new WebSocket('ws://41.22.31.125:8080/pcwebsocket/123');
+
+    socket.onopen = function(event) {
+        console.log('WebSocket connection opened:', event);
+		const message = JSON.stringify({ cmd: 'HEART' });
+		socket.send(message);
+    };
+
+    socket.onmessage = function(event) {
+        console.log('Received message:', event.data);
+    };
+
+    socket.onerror = function(error) {
+        console.error('WebSocket error:', error);
+    };
+
+    socket.onclose = function(event) {
+        console.log('WebSocket connection closed:', event);
+    };
+</script>
+</body>
+</html>
