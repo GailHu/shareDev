@@ -5,6 +5,7 @@
     <groupId>com.gail.dev</groupId>
     <artifactId>common</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>common</name>
     <description>common</description>
     <properties>
@@ -39,6 +40,10 @@
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
             <version>3.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
         </dependency>
     </dependencies>
     <dependencyManagement>
