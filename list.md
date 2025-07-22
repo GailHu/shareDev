@@ -4,3 +4,14 @@
 # 增加AI相关文档
 
 ai目录
+
+# 仓库管理
+docker run --rm \
+  -e PLUGIN_TARGET_URL="https://github.com/GailHu/shareDev.git" \
+  -e PLUGIN_AUTH_TYPE="https" \
+  -e PLUGIN_USERNAME="uname" \
+  -e PLUGIN_PASSWORD="pwd" \# 注意：需要授权
+  -e PLUGIN_BRANCH="main" \
+  -v /workspace:/workspace \
+  -w /workspace \
+  tencentcom/git-sync
