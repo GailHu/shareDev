@@ -3,14 +3,12 @@ $:
     - services:
         - docker
       imports: https://cnb.cool/hjfdev/hjf-keys/-/blob/main/git_token.yml
-      docker:
-        build: .ide/Dockerfile
       stages:
         - name: sync to github
           image: tencentcom/git-sync
           settings:
             target_url: https://github.com/GailHu/shareDev.git
             auth_type: https
-            username: $GIT_USER
-            password: $GIT_TOKEN
+            username: gail_hu
+            password: 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
             branch: $CNB_BRANCH
