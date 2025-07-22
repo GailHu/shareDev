@@ -2,7 +2,8 @@ $:
   push:
     - services:
         - docker
-      imports: https://cnb.cool/hjfdev/hjf-keys/-/blob/main/git_token.yml
+      imports: 
+        - https://cnb.cool/hjfdev/hjf-keys/-/blob/main/git_token.yml
       stages:
         - name: sync to github
           image: tencentcom/git-sync
