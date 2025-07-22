@@ -9,6 +9,6 @@ $:
           settings:
             target_url: https://github.com/GailHu/shareDev.git
             auth_type: https
-            username: gail_hu
-            password: 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
+            username: $GIT_USER
+            password: $GIT_TOKEN
             branch: $CNB_BRANCH
