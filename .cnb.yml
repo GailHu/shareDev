@@ -1,0 +1,16 @@
+$:
+  push:
+    - services:
+        - docker
+      imports: https://cnb.cool/hjfdev/hjf-keys/-/blob/main/git_token.yml
+      docker:
+        build: .ide/Dockerfile
+      stages:
+        - name: sync to github
+          image: tencentcom/git-sync
+          settings:
+            target_url: https://github.com/GailHu/shareDev.git
+            auth_type: https
+            username: $GIT_USER
+            password: $GIT_TOKEN
+            branch: $CNB_BRANCH
