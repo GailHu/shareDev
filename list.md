@@ -15,3 +15,4 @@ docker run --rm \
   -v /workspace:/workspace \
   -w /workspace \
   tencentcom/git-sync
+> 注意，可能需要强制推送
