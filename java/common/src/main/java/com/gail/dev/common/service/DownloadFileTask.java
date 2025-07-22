@@ -2,6 +2,8 @@ package com.gail.dev.common.service;
 
 import cn.hutool.json.JSONUtil;
 import com.gail.dev.common.entity.TaskEntity;
+import lombok.extern.slf4j.Slf4j;
+
 
 /**
  * @author Gail_Hu
@@ -10,6 +12,7 @@ import com.gail.dev.common.entity.TaskEntity;
  * @description
  * @create 24.2.19 12:05
  */
+@Slf4j
 public class DownloadFileTask implements Runnable{
     private TaskEntity taskEntity;
 
@@ -22,6 +25,6 @@ public class DownloadFileTask implements Runnable{
         String srcPath = taskEntity.getSrcPath();
         String targetPath = taskEntity.getTargetPath();
         // 文件命名规则引擎
-        System.out.println("Executing task with parameter: " + JSONUtil.toJsonStr(taskEntity));
+        log.info("Executing task with parameter: " + JSONUtil.toJsonStr(taskEntity));
     }
 }
