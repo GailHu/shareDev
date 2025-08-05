@@ -13,4 +13,3 @@ $:
             username: $GIT_USER
             password: $GIT_TOKEN
             branch: $CNB_BRANCH
-            sync_mode: rebase
