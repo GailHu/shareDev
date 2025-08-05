@@ -26,5 +26,5 @@ $:
             target_url: https://github.com/GailHu/shareDev.git
             auth_type: https
             username: $GIT_USER
-            password: $GIT_TOKEN
+            password: $GIT_HJF_TOKEN
             branch: $CNB_BRANCH
