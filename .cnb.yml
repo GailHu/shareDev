@@ -1,4 +1,19 @@
+# .cnb.yml
 $:
+  vscode:
+    - runner:
+        cpus: 12
+      imports: https://cnb.cool/hjfdev/hjf-keys/-/blob/main/git_token.yml
+      docker:
+        # 指定开发环境镜像，可以是任意可访问的镜像
+        build: .ide/Dockerfile
+      services:
+        - vscode
+        - docker
+      # 开发环境启动后会执行的任务
+      stages:
+        - name: login_docker
+          script: docker login docker.cnb.cool -u cnb -p $DOCKER_TOKEN
   push:
     - services:
         - docker
