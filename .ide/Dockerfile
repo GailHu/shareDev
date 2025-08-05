@@ -2,7 +2,7 @@
 FROM ubuntu:22.04
 
 # 设置环境变量
-ENV JAVA_HOME=/usr/lib/jvm/jdk-21.0.7
+ENV JAVA_HOME=/usr/lib/jvm/jdk-21.0.8
 ENV MAVEN_HOME=/usr/local/apache-maven
 ENV PATH=$PATH:$JAVA_HOME/bin:$MAVEN_HOME/bin:/usr/local/mysql/bin:/usr/local/bin:/root/.local/bin
 ENV MYSQL_ROOT_PASSWORD=root
