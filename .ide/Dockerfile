@@ -5,10 +5,12 @@ FROM ubuntu:22.04
 ENV JAVA_HOME=/usr/lib/jvm/jdk-21.0.7
 ENV MAVEN_HOME=/usr/local/apache-maven
 ENV PATH=$PATH:$JAVA_HOME/bin:$MAVEN_HOME/bin:/usr/local/mysql/bin:/usr/local/bin:/root/.local/bin
+ENV MYSQL_ROOT_PASSWORD=root
+ENV ES_JAVA_OPTS="-Xms512m -Xmx512m"
 
 # 更新系统并安装基础工具  
 RUN apt-get update && \
-    apt-get install -y update-alternatives wget tar gzip vim net-tools curl openssh-server git-lfs && \
+    apt-get install -y update-alternatives wget tar gzip vim net-tools curl software-properties-common openssh-server git-lfs && \
     apt-get clean
 
 # 安装JDK 21
