@@ -22,10 +22,10 @@ RUN wget https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.tar.gz 
     update-alternatives --install /usr/bin/javac javac $JAVA_HOME/bin/javac 20000
 
 # 安装Maven
-RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.tar.gz && \
-    tar -zxvf apache-maven-3.9.10-bin.tar.gz -C /usr/local/ && \
-    mv /usr/local/apache-maven-3.9.10 /usr/local/apache-maven && \
-    rm apache-maven-3.9.10-bin.tar.gz
+RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.11/binaries/apache-maven-3.9.11-bin.tar.gz && \
+    tar -zxvf apache-maven-3.9.11-bin.tar.gz -C /usr/local/ && \
+    mv /usr/local/apache-maven-3.9.11 /usr/local/apache-maven && \
+    rm apache-maven-3.9.11-bin.tar.gz
  
 # 安装 code-server 和 vscode 常用插件
 RUN curl -fsSL https://code-server.dev/install.sh | sh \
