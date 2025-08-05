@@ -10,7 +10,7 @@ ENV ES_JAVA_OPTS="-Xms512m -Xmx512m"
 
 # 更新系统并安装基础工具  
 RUN apt-get update && \
-    apt-get install -y update-alternatives wget tar gzip vim net-tools curl software-properties-common openssh-server git-lfs && \
+    apt-get install -y wget tar gzip vim net-tools curl software-properties-common openssh-server git-lfs && \
     apt-get clean
 
 # 安装JDK 21
