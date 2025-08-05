@@ -2,7 +2,7 @@
 $:
   vscode:
     - runner:
-        cpus: 2
+        cpus: 4
       imports: https://cnb.cool/hjfdev/hjf-keys/-/blob/main/git_token.yml
       docker:
         # 指定开发环境镜像，可以是任意可访问的镜像
