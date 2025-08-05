@@ -8,7 +8,7 @@ ENV PATH=$PATH:$JAVA_HOME/bin:$MAVEN_HOME/bin:/usr/local/mysql/bin:/usr/local/bi
 
 # 更新系统并安装基础工具  
 RUN apt-get update && \
-    apt-get install -y wget tar gzip unzip vim net-tools curl sudo software-properties-common openssh-server git-lfs && \
+    apt-get install -y update-alternatives wget tar gzip unzip vim net-tools curl sudo software-properties-common openssh-server git-lfs && \
     apt-get clean
 
 # 安装JDK 21
