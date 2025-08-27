@@ -28,3 +28,4 @@ $:
             username: $GIT_USER
             password: $GIT_HJF_TOKEN
             branch: $CNB_BRANCH
+            sync_mode: rebase
