@@ -37,6 +37,3 @@ A: 在控制台的“日志”页面中，选择模型和时间范围即可查�
 1. **MCP 官方文档**：[https://docs.mcp.example.com](https://docs.mcp.example.com)
 2. **MCP 社区论坛**：[https://forum.mcp.example.com](https://forum.mcp.example.com)
 3. **MCP GitHub 仓库**：[https://github.com/mcp-project](https://github.com/mcp-project)
-
-## 联系我们
-如有其他问题，请联系技术支持：support@mcp.example.com
