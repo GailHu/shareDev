@@ -22,3 +22,13 @@ https://blog.csdn.net/qq_52065352/article/details/150394958
 神经网络与深度学习
 
 https://nndl.github.io/
+
+
+大模型学习：
+https://github.com/datawhalechina/happy-llm/blob/main/docs/%E5%89%8D%E8%A8%80.md
+
+构建智能体：
+https://datawhalechina.github.io/hello-agents/#/
+
+
+L站：https://linux.do/t/topic/1361110/7
