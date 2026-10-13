@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自媒体创意灵感工具 — 热词获取技术调研报告</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+<style>
+:root {
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --primary-dark: #4f46e5;
+  --accent: #f59e0b;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --code-bg: #f1f5f9;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  padding: 0;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+header {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+  color: white;
+  padding: 60px 24px;
+  text-align: center;
+}
+header h1 { font-size: 2.2em; margin-bottom: 12px; font-weight: 700; }
+header p { font-size: 1.1em; opacity: 0.85; max-width: 700px; margin: 0 auto; }
+header .meta { margin-top: 20px; font-size: 0.9em; opacity: 0.7; }
+h2 {
+  font-size: 1.6em;
+  color: var(--primary-dark);
+  margin: 48px 0 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary-light);
+}
+h3 { font-size: 1.25em; color: var(--text); margin: 28px 0 12px; }
+h4 { font-size: 1.05em; color: var(--text-secondary); margin: 20px 0 8px; }
+p { margin-bottom: 14px; }
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 16px 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border: 1px solid var(--border);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.card-header .icon { font-size: 1.4em; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 0.92em;
+}
+th, td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+th {
+  background: var(--code-bg);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+tr:hover td { background: #f8fafc; }
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+.badge-green { background: #d1fae5; color: #065f46; }
+.badge-yellow { background: #fef3c7; color: #92400e; }
+.badge-red { background: #fee2e2; color: #991b1b; }
+.badge-blue { background: #dbeafe; color: #1e40af; }
+.badge-purple { background: #ede9fe; color: #5b21b6; }
+
+.tabs { display: flex; gap: 4px; margin-bottom: 0; flex-wrap: wrap; }
+.tab-btn {
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: var(--code-bg);
+  cursor: pointer;
+  font-size: 0.92em;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.tab-btn.active {
+  background: var(--card);
+  border-color: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+.tab-content {
+  display: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0 8px 8px 8px;
+  padding: 24px;
+}
+.tab-content.active { display: block; }
+
+.highlight-box {
+  border-left: 4px solid var(--primary);
+  background: #eef2ff;
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+}
+.warning-box {
+  border-left: 4px solid var(--warning);
+  background: #fffbeb;
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+}
+.danger-box {
+  border-left: 4px solid var(--danger);
+  background: #fef2f2;
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+}
+.success-box {
+  border-left: 4px solid var(--success);
+  background: #ecfdf5;
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+}
+
+code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.88em;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 16px 0;
+  font-size: 0.88em;
+  line-height: 1.6;
+}
+pre code { background: none; padding: 0; color: inherit; }
+
+.mermaid { margin: 24px 0; text-align: center; }
+
+.cost-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.cost-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.cost-card .amount { font-size: 1.8em; font-weight: 700; color: var(--primary); }
+.cost-card .label { font-size: 0.9em; color: var(--text-secondary); margin-top: 4px; }
+
+.toc {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 32px;
+  margin: 24px 0;
+}
+.toc h3 { margin-top: 0; }
+.toc ol { padding-left: 20px; }
+.toc li { margin: 6px 0; }
+.toc a { color: var(--text); }
+.toc a:hover { color: var(--primary); }
+
+.platform-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+.tag-douyin { background: #fce7f3; color: #9d174d; }
+.tag-bili { background: #dbeafe; color: #1e40af; }
+.tag-wechat { background: #d1fae5; color: #065f46; }
+
+.feasibility-meter {
+  height: 8px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  overflow: hidden;
+  margin: 6px 0;
+}
+.feasibility-meter .fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+.fill-high { background: var(--success); }
+.fill-medium { background: var(--warning); }
+.fill-low { background: var(--danger); }
+
+footer {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  border-top: 1px solid var(--border);
+  margin-top: 60px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>自媒体创意灵感工具</h1>
+  <p>热词获取与爆款内容采集技术调研报告</p>
+  <div class="meta">调研日期：2026-07-30 | 目标平台：抖音 / B站 / 视频号 | 定位：泛娱乐全领域</div>
+</header>
+
+<div class="container">
+
+<!-- 目录 -->
+<div class="toc">
+  <h3>目录</h3>
+  <ol>
+    <li><a href="#summary">核心结论与推荐方案</a></li>
+    <li><a href="#douyin">抖音热榜数据采集方案</a></li>
+    <li><a href="#bilibili">B站热榜数据采集方案</a></li>
+    <li><a href="#wechat">视频号数据采集可行性评估</a></li>
+    <li><a href="#competitors">竞品工具分析</a></li>
+    <li><a href="#nlp">文案提取与关键词技术</a></li>
+    <li><a href="#architecture">系统架构设计</a></li>
+    <li><a href="#cost">成本估算</a></li>
+    <li><a href="#legal">合规与风险提示</a></li>
+    <li><a href="#roadmap">实施路线建议</a></li>
+  </ol>
+</div>
+
+<!-- 1. 核心结论 -->
+<h2 id="summary">1. 核心结论与推荐方案</h2>
+
+<div class="highlight-box">
+  <strong>一句话结论：</strong>抖音和B站的热榜数据可以通过官方/半官方API稳定获取，视频号因微信封闭生态几乎无法自动化采集（建议用公众号热文+微信指数作为替代信号）。全链路日处理100条视频的成本约 ¥5-13/天。
+</div>
+
+<div class="cost-grid">
+  <div class="cost-card">
+    <div class="amount">3 平台</div>
+    <div class="label">抖音(高可行) + B站(高可行) + 视频号(低可行)</div>
+  </div>
+  <div class="cost-card">
+    <div class="amount">¥5-13/天</div>
+    <div class="label">100条视频全链路处理成本</div>
+  </div>
+  <div class="cost-card">
+    <div class="amount">~30min</div>
+    <div class="label">每日批量处理耗时</div>
+  </div>
+  <div class="cost-card">
+    <div class="amount">2-3 周</div>
+    <div class="label">MVP 开发周期预估</div>
+  </div>
+</div>
+
+<h3>推荐技术路线</h3>
+<table>
+  <tr><th>环节</th><th>推荐方案</th><th>理由</th></tr>
+  <tr><td>抖音热榜</td><td>抖音开放平台「查询热点视频」API + TikHub 补充</td><td>官方免费无门槛 + 商业API稳定</td></tr>
+  <tr><td>B站热榜</td><td>api.bilibili.com 排行榜接口 (WBI签名)</td><td>数据完整、免费、社区验证充分</td></tr>
+  <tr><td>视频号</td><td>新视数据/友望数据(付费) + 公众号热文API(替代)</td><td>微信生态封闭，无合法自动化路径</td></tr>
+  <tr><td>ASR转录</td><td>阿里云 Paraformer (¥0.288/小时)</td><td>性价比极高，中文CER 3-5%</td></tr>
+  <tr><td>关键词提取</td><td>jieba TF-IDF 初筛 + Qwen-Turbo 深度分析</td><td>零成本初筛 + LLM语义理解，日成本<¥0.1</td></tr>
+  <tr><td>趋势检测</td><td>7天滑动窗口回归 + 环比增长率</td><td>简单有效，无需复杂模型</td></tr>
+  <tr><td>主题聚类</td><td>BERTopic + text2vec-chinese</td><td>语义级聚类，支持动态追踪</td></tr>
+</table>
+
+<!-- 2. 抖音 -->
+<h2 id="douyin">2. 抖音热榜数据采集方案</h2>
+
+<div class="card">
+  <div class="card-header">
+    <span class="icon">📊</span>
+    <strong>可行性评级：<span class="badge badge-green">高</span></strong>
+  </div>
+  <div class="feasibility-meter"><div class="fill fill-high" style="width:85%"></div></div>
+  <p style="font-size:0.9em;color:var(--text-secondary)">官方API可用 + 多个成熟开源工具 + 商业API服务完善</p>
+</div>
+
+<h3>2.1 官方API：抖音开放平台</h3>
+<p>抖音开放平台提供「查询热点视频」能力，包含实时热词、飙升词、以及按热词分组的视频列表。</p>
+
+<table>
+  <tr><th>项目</th><th>详情</th></tr>
+  <tr><td>入口</td><td><a href="https://developer.open-douyin.com" target="_blank">developer.open-douyin.com</a></td></tr>
+  <tr><td>准入门槛</td><td>「暂无准入条件，任一应用均可申请使用」</td></tr>
+  <tr><td>注册要求</td><td>抖音账号 + 实名认证；个人开发者或企业开发者</td></tr>
+  <tr><td>返回数据</td><td>热词、飙升词、视频ID、标题、封面、点赞/评论/分享数、创建时间、热度值</td></tr>
+  <tr><td>刷新频率</td><td>热榜约每2小时更新</td></tr>
+  <tr><td>认证方式</td><td>OAuth 2.0 授权码流程，获取 Client ID + Secret</td></tr>
+</table>
+
+<div class="success-box">
+  <strong>优势：</strong>免费、官方、稳定、无法律风险。适合获取每日热搜词和对应热门视频。
+</div>
+
+<h3>2.2 商业API：TikHub</h3>
+<p>TikHub 是面向开发者的付费API服务，提供完整的抖音数据接口：</p>
+<table>
+  <tr><th>端点</th><th>功能</th><th>价格</th></tr>
+  <tr><td><code>fetch_hot_search_list</code></td><td>热搜榜单</td><td rowspan="5">$0.001/次 (3万次/天后降至$0.0005)</td></tr>
+  <tr><td><code>fetch_one_video</code></td><td>单视频详情(含标签、音乐)</td></tr>
+  <tr><td><code>fetch_video_statistics</code></td><td>互动数据(播放/点赞/评论/分享)</td></tr>
+  <tr><td><code>fetch_video_comments</code></td><td>评论及回复</td></tr>
+  <tr><td>Billboard 系列</td><td>热门话题/音乐/账号榜</td></tr>
+</table>
+<p>月费 $5-$55 不等（按RPS档位），适合需要结构化JSON、稳定SLA的场景。</p>
+
+<h3>2.3 开源工具</h3>
+<table>
+  <tr><th>项目</th><th>Stars</th><th>能力</th><th>状态</th></tr>
+  <tr>
+    <td><a href="https://github.com/Evil0ctal/Douyin_TikTok_Download_API" target="_blank">Douyin_TikTok_Download_API</a></td>
+    <td>~19K</td>
+    <td>视频元数据、用户资料、评论、直播数据、批量解析</td>
+    <td><span class="badge badge-green">活跃维护</span></td>
+  </tr>
+  <tr>
+    <td><code>pip install f2</code> (F2)</td>
+    <td>-</td>
+    <td>多平台下载+数据接口，含 a_bogus 算法</td>
+    <td><span class="badge badge-green">活跃</span></td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/lonnyzhang423/douyin-hot-hub" target="_blank">douyin-hot-hub</a></td>
+    <td>-</td>
+    <td>GitHub Actions 每小时抓取热榜，Markdown归档</td>
+    <td><span class="badge badge-blue">自动运行</span></td>
+  </tr>
+</table>
+
+<h3>2.4 反爬机制与应对</h3>
+<div class="warning-box">
+  抖音Web端有严格反爬：<code>X-Bogus</code>、<code>a_bogus</code> 签名参数 + 浏览器指纹 + 滑块验证。
+  自建爬虫需持续跟进签名算法更新，维护成本高。<strong>建议优先使用官方API或TikHub，避免直接爬取。</strong>
+</div>
+
+<h3>2.5 免费热榜API（轻量替代）</h3>
+<table>
+  <tr><th>服务</th><th>地址</th><th>说明</th></tr>
+  <tr><td>聚合数据</td><td>juhe.cn/docs/api/id/573</td><td>热门视频榜单API（付费）</td></tr>
+  <tr><td>ALAPI</td><td>alapi.cn/api/29</td><td>今日热榜含抖音热搜</td></tr>
+  <tr><td>aiclubs</td><td>aiclubs.cn/hotapi</td><td>免费热榜聚合API</td></tr>
+  <tr><td>xxapi</td><td>xxapi.cn/doc/douyinhot</td><td>抖音热榜端点</td></tr>
+</table>
+
+<!-- 3. B站 -->
+<h2 id="bilibili">3. B站热榜数据采集方案</h2>
+
+<div class="card">
+  <div class="card-header">
+    <span class="icon">📺</span>
+    <strong>可行性评级：<span class="badge badge-green">高</span></strong>
+  </div>
+  <div class="feasibility-meter"><div class="fill fill-high" style="width:80%"></div></div>
+  <p style="font-size:0.9em;color:var(--text-secondary)">Web API 公开可用，数据字段丰富，但2026年1月律师函事件需注意法律风险</p>
+</div>
+
+<h3>3.1 核心API端点</h3>
+<p>B站虽无正式"开放数据API"，但其Web客户端使用的 <code>api.bilibili.com</code> 接口被社区广泛验证：</p>
+
+<table>
+  <tr><th>端点</th><th>功能</th><th>参数</th></tr>
+  <tr>
+    <td><code>GET /x/web-interface/ranking/v2</code></td>
+    <td>分区排行榜</td>
+    <td><code>rid</code>=0(全站)/1(动画)/4(游戏)/36(知识)...<br><code>type</code>=all/origin/rookie</td>
+  </tr>
+  <tr>
+    <td><code>GET /x/web-interface/popular</code></td>
+    <td>综合热门</td>
+    <td><code>ps</code>=20, <code>pn</code>=页码</td>
+  </tr>
+  <tr>
+    <td><code>GET /x/web-interface/search/square</code></td>
+    <td>热搜词</td>
+    <td><code>limit</code>=数量</td>
+  </tr>
+  <tr>
+    <td><code>GET /x/web-interface/view</code></td>
+    <td>视频详情</td>
+    <td><code>bvid</code>=BV号</td>
+  </tr>
+  <tr>
+    <td><code>GET /x/tag/archive/tags</code></td>
+    <td>视频标签</td>
+    <td><code>bvid</code>=BV号</td>
+  </tr>
+</table>
+
+<h3>3.2 返回数据字段</h3>
+<p>每条视频包含完整元数据：</p>
+<table>
+  <tr><th>字段</th><th>说明</th><th>字段</th><th>说明</th></tr>
+  <tr><td><code>title</code></td><td>标题</td><td><code>stat.view</code></td><td>播放量</td></tr>
+  <tr><td><code>desc</code></td><td>简介</td><td><code>stat.like</code></td><td>点赞</td></tr>
+  <tr><td><code>owner.name</code></td><td>UP主</td><td><code>stat.coin</code></td><td>投币</td></tr>
+  <tr><td><code>pubdate</code></td><td>发布时间</td><td><code>stat.favorite</code></td><td>收藏</td></tr>
+  <tr><td><code>duration</code></td><td>时长(秒)</td><td><code>stat.danmaku</code></td><td>弹幕数</td></tr>
+  <tr><td><code>tname</code></td><td>分区</td><td><code>stat.reply</code></td><td>评论数</td></tr>
+</table>
+
+<h3>3.3 WBI 签名机制（2023年后必须）</h3>
+<p>大部分接口现在需要 WBI 签名，否则返回 <code>-799</code> 错误。算法流程：</p>
+<pre><code>1. GET /x/web-interface/nav → 提取 img_key + sub_key
+2. 拼接后按固定置换表重排，取前32字符 → mixin_key
+3. 请求参数追加 wts=当前时间戳
+4. 参数按key排序 → URL编码 → MD5(编码结果 + mixin_key) → w_rid
+5. 最终请求携带 w_rid + wts
+注：密钥每日轮换，需定时刷新</code></pre>
+
+<h3>3.4 重要风险事件</h3>
+<div class="danger-box">
+  <strong>2026年1月：</strong>B站向 bilibili-API-collect 项目（GitHub 20K+ stars）发送律师函，要求彻底删除所有代码及git历史。bilibili-api Python库随后归档停止维护。
+  <br><br>
+  <strong>影响：</strong>API本身仍可用（驱动官方客户端），但公开文档/工具面临法律风险。Gitee镜像仍存在。
+  <br><br>
+  <strong>建议：</strong>个人研究使用风险较低；商业产品建议走火烧云/飞瓜等授权数据服务。
+</div>
+
+<h3>3.5 第三方服务与开源替代</h3>
+<table>
+  <tr><th>名称</th><th>类型</th><th>说明</th></tr>
+  <tr><td>火烧云数据 (hsydata.com)</td><td>商业SaaS</td><td>UP主分析、视频追踪、营销增长</td></tr>
+  <tr><td>飞瓜B站版 (bz.feigua.cn)</td><td>商业SaaS</td><td>视频排行、UP主排行、电商数据</td></tr>
+  <tr><td>DailyHotApi (npm)</td><td>开源</td><td>聚合热榜API，含B站+数十平台</td></tr>
+  <tr><td>daily-hot-mcp</td><td>开源MCP</td><td>AI Agent集成热榜数据</td></tr>
+</table>
+
+<!-- 4. 视频号 -->
+<h2 id="wechat">4. 视频号数据采集可行性评估</h2>
+
+<div class="card">
+  <div class="card-header">
+    <span class="icon">💬</span>
+    <strong>可行性评级：<span class="badge badge-red">极低</span></strong>
+  </div>
+  <div class="feasibility-meter"><div class="fill fill-low" style="width:12%"></div></div>
+  <p style="font-size:0.9em;color:var(--text-secondary)">微信生态高度封闭，无官方热榜API，爬虫已被大规模封禁</p>
+</div>
+
+<h3>4.1 为什么视频号几乎不可行</h3>
+<table>
+  <tr><th>限制维度</th><th>具体情况</th></tr>
+  <tr><td>官方API</td><td>仅有「视频号助手API」，面向自有账号的电商/直播运营，<strong>无任何热榜/发现类接口</strong></td></tr>
+  <tr><td>Web端</td><td>channels.weixin.qq.com 仅为创作者管理后台，无公开浏览/搜索页面</td></tr>
+  <tr><td>执法力度</td><td>已封禁 1000+ 个利用爬虫抓取视频号数据的微信账号</td></tr>
+  <tr><td>技术壁垒</td><td>无公开搜索端点、分享链接带token过期、小程序数据加密</td></tr>
+  <tr><td>法律先例</td><td>有程序员因爬取13万条视频获刑2年的刑事判例</td></tr>
+</table>
+
+<h3>4.2 替代方案（推荐）</h3>
+<div class="highlight-box">
+  既然无法直接获取视频号热榜，可以用以下<strong>微信生态代理信号</strong>间接捕捉趋势：
+</div>
+<table>
+  <tr><th>替代信号</th><th>获取方式</th><th>可行性</th></tr>
+  <tr><td>公众号热文榜</td><td>新榜API / 天行数据API (tianapi.com/apiview/197)</td><td><span class="badge badge-green">高</span></td></tr>
+  <tr><td>微信指数</td><td>小程序手动查看 / 逆向(极不稳定)</td><td><span class="badge badge-yellow">中低</span></td></tr>
+  <tr><td>搜一搜热词</td><td>无API，需手动观察</td><td><span class="badge badge-red">低</span></td></tr>
+  <tr><td>新视数据/友望数据</td><td>付费SaaS，提供估算排行</td><td><span class="badge badge-yellow">中</span></td></tr>
+</table>
+
+<div class="warning-box">
+  <strong>务实建议：</strong>将视频号定位为"辅助参考"而非"主力数据源"。核心热榜数据从抖音+B站获取（覆盖短视频+中长视频），微信生态用公众号热文做趋势补充。如果预算允许，订阅新视数据(¥5000+/年)获取视频号估算排行。
+</div>
+
+<!-- 5. 竞品 -->
+<h2 id="competitors">5. 竞品工具分析</h2>
+
+<h3>5.1 国内数据平台</h3>
+<table>
+  <tr><th>工具</th><th>核心能力</th><th>价格</th><th>API</th><th>局限</th></tr>
+  <tr><td><strong>蝉妈妈</strong></td><td>抖音电商全链路：达人带货、粉丝画像、直播监控、AI文案</td><td>~¥20,000+/年</td><td>无公开API</td><td>偏电商，非创意灵感</td></tr>
+  <tr><td><strong>飞瓜数据</strong></td><td>多平台(抖/快/B/红)：热门话题/音乐/视频、竞品追踪</td><td>~¥8,000+/年</td><td>无公开API</td><td>数据看板，无行动建议</td></tr>
+  <tr><td><strong>考古加</strong></td><td>抖音兴趣电商：分钟级更新、NLP评论痛点分析</td><td>¥99/月起</td><td>企业定制</td><td>界面简化</td></tr>
+  <tr><td><strong>即时热榜</strong></td><td>50+平台热搜聚合</td><td>免费</td><td>非官方可用</td><td>仅标题，无深度分析</td></tr>
+  <tr><td><strong>巨量算数</strong></td><td>抖音官方趋势指数</td><td>免费</td><td>无</td><td>仅关键词趋势，无视频级数据</td></tr>
+</table>
+
+<h3>5.2 国际工具</h3>
+<table>
+  <tr><th>工具</th><th>核心能力</th><th>价格</th><th>局限</th></tr>
+  <tr><td>VidIQ</td><td>YouTube SEO：关键词研究、竞品分析、最佳发布时间</td><td>$7.5-$415/月</td><td>仅YouTube</td></tr>
+  <tr><td>BuzzSumo</td><td>内容研究：热门内容发现、竞品监控、影响者识别</td><td>$199-$999/月</td><td>偏英文，价格高</td></tr>
+  <tr><td>Exploding Topics</td><td>趋势预测：在爆发前识别上升趋势</td><td>$39-$249/月</td><td>无中文内容</td></tr>
+  <tr><td>TrendTok</td><td>TikTok AI趋势预测(音频/话题/标签)</td><td>$10-$30/月</td><td>仅TikTok国际版</td></tr>
+</table>
+
+<h3>5.3 市场空白（你的机会）</h3>
+<div class="card">
+  <p>现有工具的共同缺陷：</p>
+  <table>
+    <tr><th>痛点</th><th>现状</th><th>你的工具可以做什么</th></tr>
+    <tr><td>平台割裂</td><td>每个工具只覆盖1-2个平台</td><td>抖音+B站+微信信号 一站式聚合</td></tr>
+    <tr><td>数据≠灵感</td><td>提供数据看板，不提供"今天拍什么"</td><td>AI生成每日选题建议+切入角度</td></tr>
+    <tr><td>无个性化</td><td>所有用户看相同热榜</td><td>基于创作者定位/风格过滤+推荐</td></tr>
+    <tr><td>缺乏AI整合</td><td>数据分析和创意生成分离</td><td>爆款拆解→关键词→选题→脚本 全链路</td></tr>
+    <tr><td>无主动推送</td><td>需要主动打开工具查看</td><td>每日创意简报 推送到微信/飞书</td></tr>
+  </table>
+</div>
+
+<!-- 6. NLP -->
+<h2 id="nlp">6. 文案提取与关键词技术</h2>
+
+<h3>6.1 视频转录 (ASR) 方案对比</h3>
+<table>
+  <tr><th>服务</th><th>中文CER</th><th>价格</th><th>速度</th><th>推荐度</th></tr>
+  <tr>
+    <td><strong>阿里云 Paraformer</strong></td><td>3-5%</td><td>¥0.288/小时</td><td>异步分钟级</td>
+    <td><span class="badge badge-green">性价比首选</span></td>
+  </tr>
+  <tr><td>讯飞听见</td><td>3-5%</td><td>~¥30/小时(API按量更低)</td><td>实时/异步</td><td><span class="badge badge-blue">质量最优</span></td></tr>
+  <tr><td>faster-whisper (自部署)</td><td>5-8%</td><td>GPU成本 ~¥2/天</td><td>12x实时(RTX4070)</td><td><span class="badge badge-purple">自建首选</span></td></tr>
+  <tr><td>OpenAI Whisper API</td><td>5-8%</td><td>$0.006/分钟</td><td>异步</td><td>一般</td></tr>
+  <tr><td>腾讯云ASR</td><td>4-6%</td><td>与阿里接近</td><td>实时/异步</td><td>一般</td></tr>
+</table>
+
+<h3>6.2 关键词/主题提取技术栈</h3>
+
+<div class="tabs">
+  <div class="tab-btn active" onclick="switchTab(event, 'tab-nlp')">传统NLP</div>
+  <div class="tab-btn" onclick="switchTab(event, 'tab-llm')">LLM方案</div>
+  <div class="tab-btn" onclick="switchTab(event, 'tab-hybrid')">推荐混合方案</div>
+</div>
+
+<div id="tab-nlp" class="tab-content active">
+  <table>
+    <tr><th>方法</th><th>工具</th><th>优缺点</th></tr>
+    <tr><td>TF-IDF</td><td>jieba.analyse.extract_tags()</td><td>快速零成本，但无语义理解</td></tr>
+    <tr><td>TextRank</td><td>jieba.analyse.textrank()</td><td>考虑词共现，仍基于统计</td></tr>
+    <tr><td>KeyBERT</td><td>text2vec-chinese + KeyBERT</td><td>语义级匹配，需GPU</td></tr>
+    <tr><td>中文分词</td><td>jieba / pkuseg / HanLP</td><td>jieba轻量；HanLP功能最全</td></tr>
+  </table>
+</div>
+
+<div id="tab-llm" class="tab-content">
+  <table>
+    <tr><th>模型</th><th>价格(百万token)</th><th>适用场景</th></tr>
+    <tr><td><strong>Qwen-Turbo</strong></td><td>输入¥0.3 / 输出¥0.6</td><td>批量关键词提取（性价比极高）</td></tr>
+    <tr><td>GLM-4-Flash</td><td>¥0.1 混合</td><td>超低成本批量处理</td></tr>
+    <tr><td>Qwen-Plus</td><td>输入¥0.8 / 输出¥2</td><td>质量与成本平衡</td></tr>
+    <tr><td>DeepSeek V4-Flash</td><td>输入¥1 / 输出¥2</td><td>长文本分析(1M context)</td></tr>
+  </table>
+  <p style="margin-top:12px">LLM优势：理解语境、识别隐含主题、一步生成结构化输出（标签+摘要+选题建议）</p>
+</div>
+
+<div id="tab-hybrid" class="tab-content">
+  <div class="highlight-box">
+    <strong>推荐方案：</strong>jieba TF-IDF 做初筛（零成本、毫秒级）→ Qwen-Turbo/GLM-4-Flash 做深度语义分析和创意建议生成
+  </div>
+  <p>100条视频/天的LLM成本：</p>
+  <table>
+    <tr><th>模型</th><th>计算</th><th>日成本</th></tr>
+    <tr><td>Qwen-Turbo</td><td>100 × (1500×0.3 + 500×0.6) / 1M</td><td><strong>¥0.075</strong></td></tr>
+    <tr><td>GLM-4-Flash</td><td>100 × 2000 × 0.1 / 1M</td><td><strong>¥0.02</strong></td></tr>
+  </table>
+  <p>几乎可以忽略不计。</p>
+</div>
+
+<h3>6.3 趋势检测方法</h3>
+<table>
+  <tr><th>方法</th><th>原理</th><th>适用场景</th></tr>
+  <tr><td>滑动窗口线性回归</td><td>7天/30天频率序列拟合斜率</td><td>识别稳定上升/下降趋势</td></tr>
+  <tr><td>环比增长率</td><td>(本周-上周)/上周 > 50% = 爆发</td><td>突发热点捕捉</td></tr>
+  <tr><td>Mann-Kendall检验</td><td>非参数趋势检验</td><td>小样本、非正态数据</td></tr>
+  <tr><td>BERTopic主题聚类</td><td>Embedding + UMAP + HDBSCAN</td><td>发现主题簇及演化</td></tr>
+</table>
+
+<!-- 7. 架构 -->
+<h2 id="architecture">7. 系统架构设计</h2>
+
+<h3>7.1 整体Pipeline</h3>
+<div class="mermaid">
+flowchart TB
+    subgraph 数据采集层["数据采集层 (定时调度)"]
+        A1["抖音开放平台API<br/>热词+热门视频"]
+        A2["B站排行榜API<br/>WBI签名"]
+        A3["热榜聚合<br/>DailyHotApi"]
+        A4["公众号热文API<br/>(微信替代信号)"]
+    end
+
+    subgraph 转录层["转录层 (异步队列)"]
+        B1["视频下载<br/>yt-dlp / F2"]
+        B2["音频提取<br/>FFmpeg"]
+        B3["ASR转录<br/>阿里云Paraformer"]
+    end
+
+    subgraph 分析层["分析层 (NLP + LLM)"]
+        C1["jieba分词<br/>TF-IDF初筛"]
+        C2["Qwen-Turbo<br/>深度语义分析"]
+        C3["BERTopic<br/>主题聚类"]
+        C4["趋势检测<br/>滑动窗口回归"]
+    end
+
+    subgraph 输出层["输出层"]
+        D1["每日创意简报<br/>Markdown/HTML"]
+        D2["推送通知<br/>微信/飞书/邮件"]
+        D3["Web Dashboard<br/>趋势图+选题卡片"]
+    end
+
+    A1 --> B1
+    A2 --> B1
+    A3 --> C1
+    A4 --> C1
+    B1 --> B2 --> B3
+    B3 --> C1
+    C1 --> C2
+    C2 --> C3
+    C3 --> C4
+    C4 --> D1
+    C4 --> D2
+    C4 --> D3
+</div>
+
+<h3>7.2 数据流时序</h3>
+<div class="mermaid">
+sequenceDiagram
+    participant Cron as 定时任务(每日8:00)
+    participant API as 平台API
+    participant Queue as 任务队列
+    participant ASR as 转录服务
+    participant LLM as 分析引擎
+    participant DB as 存储
+    participant User as 创作者
+
+    Cron->>API: 拉取热榜数据
+    API-->>Queue: 入队(Top100视频)
+    Queue->>ASR: 批量提交转录
+    ASR-->>LLM: 返回文本
+    LLM->>LLM: 关键词+标签+选题建议
+    LLM->>DB: 存储分析结果
+    DB->>DB: 趋势计算+聚类更新
+    DB-->>User: 推送每日创意简报
+</div>
+
+<h3>7.3 技术选型建议</h3>
+<table>
+  <tr><th>组件</th><th>推荐</th><th>备选</th></tr>
+  <tr><td>后端框架</td><td>FastAPI (Python)</td><td>Node.js + Express</td></tr>
+  <tr><td>任务队列</td><td>Celery + Redis</td><td>FastAPI BackgroundTasks (轻量)</td></tr>
+  <tr><td>数据库</td><td>PostgreSQL + pgvector</td><td>SQLite (MVP阶段)</td></tr>
+  <tr><td>定时调度</td><td>APScheduler / Celery Beat</td><td>GitHub Actions (零成本)</td></tr>
+  <tr><td>ASR</td><td>阿里云Paraformer API</td><td>faster-whisper 自部署</td></tr>
+  <tr><td>LLM</td><td>Qwen-Turbo API</td><td>GLM-4-Flash</td></tr>
+  <tr><td>Embedding</td><td>text2vec-chinese</td><td>bge-large-zh-v1.5</td></tr>
+  <tr><td>前端(可选)</td><td>Vue3 + ECharts</td><td>纯HTML报告</td></tr>
+</table>
+
+<!-- 8. 成本 -->
+<h2 id="cost">8. 成本估算</h2>
+
+<h3>8.1 每日运营成本（100条视频 × 5分钟/条）</h3>
+<div class="cost-grid">
+  <div class="cost-card">
+    <div class="amount">¥2.4</div>
+    <div class="label">ASR转录 (Paraformer ¥0.288/h × 8.3h)</div>
+  </div>
+  <div class="cost-card">
+    <div class="amount">¥0.08</div>
+    <div class="label">LLM分析 (Qwen-Turbo)</div>
+  </div>
+  <div class="cost-card">
+    <div class="amount">¥3-5</div>
+    <div class="label">服务器 (轻量云/云函数)</div>
+  </div>
+  <div class="cost-card">
+    <div class="amount">¥0</div>
+    <div class="label">热榜API (官方免费)</div>
+  </div>
+</div>
+
+<table>
+  <tr><th>方案</th><th>日成本</th><th>月成本</th><th>适用场景</th></tr>
+  <tr><td><strong>方案A：全云服务</strong></td><td>¥8-13</td><td>¥240-390</td><td>省心、免运维</td></tr>
+  <tr><td><strong>方案B：混合自建</strong></td><td>¥5-7</td><td>¥150-210</td><td>有GPU资源、愿意运维</td></tr>
+  <tr><td>方案C：极简单机</td><td>¥2-3</td><td>¥60-90</td><td>GitHub Actions + 免费API + 本地LLM</td></tr>
+</table>
+
+<h3>8.2 一次性投入</h3>
+<table>
+  <tr><th>项目</th><th>费用</th><th>说明</th></tr>
+  <tr><td>开发时间</td><td>2-3周</td><td>MVP：采集+转录+分析+简报输出</td></tr>
+  <tr><td>域名(可选)</td><td>¥50/年</td><td>如需Web Dashboard</td></tr>
+  <tr><td>新视数据(可选)</td><td>¥5,000+/年</td><td>视频号估算数据</td></tr>
+  <tr><td>TikHub(可选)</td><td>$5-$55/月</td><td>如需更丰富的抖音数据</td></tr>
+</table>
+
+<!-- 9. 合规 -->
+<h2 id="legal">9. 合规与风险提示</h2>
+
+<div class="danger-box">
+  <strong>重要：</strong>数据采集涉及多部法律，务必在合法合规框架内操作。
+</div>
+
+<table>
+  <tr><th>法律</th><th>相关条款</th><th>风险点</th></tr>
+  <tr><td>《数据安全法》</td><td>数据处理需合法正当</td><td>大规模爬取可能触发</td></tr>
+  <tr><td>《个人信息保护法》</td><td>用户画像/评论属个人信息</td><td>采集用户数据需合规</td></tr>
+  <tr><td>《反不正当竞争法》</td><td>不得非法获取竞争对手数据</td><td>商业化使用需授权</td></tr>
+  <tr><td>《刑法》第285条</td><td>非法侵入计算机信息系统</td><td>绕过技术保护措施可追刑责</td></tr>
+</table>
+
+<h3>各平台风险等级</h3>
+<table>
+  <tr><th>平台</th><th>使用官方API</th><th>使用商业服务</th><th>自建爬虫</th></tr>
+  <tr>
+    <td><span class="platform-tag tag-douyin">抖音</span></td>
+    <td><span class="badge badge-green">安全</span></td>
+    <td><span class="badge badge-green">安全</span></td>
+    <td><span class="badge badge-red">高风险</span> (a_bogus绕属规避技术措施)</td>
+  </tr>
+  <tr>
+    <td><span class="platform-tag tag-bili">B站</span></td>
+    <td><span class="badge badge-yellow">灰色</span> (无正式开放)</td>
+    <td><span class="badge badge-green">安全</span></td>
+    <td><span class="badge badge-yellow">中风险</span> (律师函先例)</td>
+  </tr>
+  <tr>
+    <td><span class="platform-tag tag-wechat">视频号</span></td>
+    <td><span class="badge badge-red">无此选项</span></td>
+    <td><span class="badge badge-green">安全</span></td>
+    <td><span class="badge badge-red">极高风险</span> (刑事判例)</td>
+  </tr>
+</table>
+
+<div class="success-box">
+  <strong>合规建议：</strong>
+  <br>1. 优先使用官方API（抖音开放平台）和授权商业服务
+  <br>2. B站数据仅用于个人研究，控制频率(1-2次/秒)，不公开分发API文档
+  <br>3. 视频号数据通过正规第三方平台(新视/友望)获取
+  <br>4. 不采集用户个人信息（评论、头像、粉丝列表等）
+  <br>5. 仅采集公开可见的热榜/排行数据，不触碰非公开数据
+</div>
+
+<!-- 10. 路线图 -->
+<h2 id="roadmap">10. 实施路线建议</h2>
+
+<div class="mermaid">
+gantt
+    title 自媒体创意灵感工具 - 实施路线
+    dateFormat  YYYY-MM-DD
+    section P0 基础采集
+    抖音热榜API对接        :p0a, 2026-08-01, 3d
+    B站排行榜API对接       :p0b, 2026-08-01, 3d
+    热榜聚合(DailyHotApi)  :p0c, 2026-08-04, 2d
+    数据存储+定时调度       :p0d, 2026-08-04, 3d
+    section P1 内容分析
+    ASR转录集成            :p1a, 2026-08-07, 3d
+    LLM关键词+选题生成     :p1b, 2026-08-08, 3d
+    趋势检测+主题聚类      :p1c, 2026-08-11, 4d
+    section P2 输出推送
+    每日创意简报生成        :p2a, 2026-08-15, 2d
+    微信/飞书推送          :p2b, 2026-08-15, 2d
+    Web Dashboard(可选)    :p2c, 2026-08-17, 5d
+    section P3 增强
+    个性化推荐             :p3a, 2026-08-22, 5d
+    竞品账号监控           :p3b, 2026-08-22, 4d
+    视频号信号接入         :p3c, 2026-08-27, 3d
+</div>
+
+<h3>MVP 最小可行产品（2周）</h3>
+<div class="card">
+  <p><strong>目标：</strong>每天早上8点，自动收到一份"今日创意简报"，包含：</p>
+  <table>
+    <tr><th>模块</th><th>内容</th></tr>
+    <tr><td>热榜速览</td><td>抖音+B站 Top20 热门视频标题+数据</td></tr>
+    <tr><td>爆款拆解</td><td>Top5 视频的文案关键词 + 为什么火</td></tr>
+    <tr><td>上升趋势</td><td>近7天热度飙升的话题/标签</td></tr>
+    <tr><td>选题建议</td><td>AI生成的3-5个选题方向 + 切入角度</td></tr>
+  </table>
+  <p style="margin-top:12px"><strong>技术栈：</strong>Python + FastAPI + APScheduler + 阿里云ASR + Qwen-Turbo + SQLite</p>
+  <p><strong>推送方式：</strong>企业微信机器人 / 飞书Webhook / 邮件</p>
+</div>
+
+<h3>关键参考资源</h3>
+<table>
+  <tr><th>资源</th><th>链接</th><th>用途</th></tr>
+  <tr><td>抖音开放平台</td><td>developer.open-douyin.com</td><td>官方热词/热视频API</td></tr>
+  <tr><td>TikHub API</td><td>tikhub.io</td><td>商业级抖音数据</td></tr>
+  <tr><td>Douyin_TikTok_Download_API</td><td>github.com/Evil0ctal/...</td><td>开源自部署方案</td></tr>
+  <tr><td>DailyHotApi</td><td>npm: dailyhot-api</td><td>多平台热榜聚合</td></tr>
+  <tr><td>B站API Gitee镜像</td><td>gitee.com/dhcy/bilibili-API-collect</td><td>B站接口文档</td></tr>
+  <tr><td>阿里云Paraformer</td><td>help.aliyun.com (语音识别)</td><td>ASR转录</td></tr>
+  <tr><td>通义千问API</td><td>dashscope.aliyun.com</td><td>LLM分析</td></tr>
+  <tr><td>新视数据</td><td>xs.newrank.cn</td><td>视频号估算数据</td></tr>
+</table>
+
+</div>
+
+<footer>
+  <p>自媒体创意灵感工具 · 热词获取技术调研报告</p>
+  <p>调研日期：2026-07-30 | 数据来源：公开文档、GitHub、行业报告</p>
+</footer>
+
+<script>
+mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+
+function switchTab(event, tabId) {
+  const container = event.target.closest('.tabs').parentElement;
+  container.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  container.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+</script>
+</body>
+</html>
